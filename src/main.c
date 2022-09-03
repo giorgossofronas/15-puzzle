@@ -26,5 +26,6 @@ int main(void)
 
     // solve the puzzle
     puzzle_solve(initial, goal);
+    
     return 0;
 }

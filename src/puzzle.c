@@ -2,6 +2,8 @@
 #include <assert.h>
 #include "puzzle.h"
 #include "io.h"
+#include "Stack.h"
+#include "PriorityQueue.h"
 #include <stdio.h>
 
 typedef struct state_node
@@ -17,7 +19,7 @@ typedef struct state_node
 
 // manhantan distance heuristic
 // sum of the manhanttan distances of each tile from its goal position 
-static int heuristic(State state)
+static uint heuristic(State state)
 {
     uint sum_manh = 0; // sum of manhanttan distances of misplaced tiles from their right coordinates in a goal state
 
@@ -41,6 +43,8 @@ bool is_state_same(State one, State two)
 // frees allocated memory of a state
 void destroy_state(State state)
 {
+    if (state == NULL || state->move < 0 || state->move > 3)
+        return;
     for (int i = 0; i < N; i++)
         free(state->puzzle[i]);
     free(state->puzzle);
@@ -49,8 +53,10 @@ void destroy_state(State state)
 
 void destroy_state_node(StateNode node)
 {
+    if (node->blank_x < 0 || node->blank_y > 8)
+        return;
     destroy_state(node->state);
-    free(node);
+    //free(node);
 }
 
 // returns a state void* to a new created state
@@ -151,38 +157,10 @@ StateNode new_move(StateNode parent, Move new_move)
 // expands the parent state
 void expand_state(StateNode parent, PriorityQueue pq)
 {
-    StateNode child; // new child
-    // try to create child-states for each possible move
-    // if created, connect child with parent
-    // and insert in priority queue
-    // UP
-    child = new_move(parent, UP);
-    if (child != NULL)
-    {
-        // child has been created
-        pq_insert(pq, child);
-    }
-    // RIGHT
-    child = new_move(parent, RIGHT);
-    if (child != NULL)
-    {
-        // child has been created
-        pq_insert(pq, child);
-    }
-    // DOWN
-    child = new_move(parent, DOWN);
-    if (child != NULL)
-    {
-        // child has been created
-        pq_insert(pq, child);
-    }
-    // LEFT
-    child = new_move(parent, LEFT);
-    if (child != NULL)
-    {
-        // child has been created
-        pq_insert(pq, child);
-    }
+    StateNode child; 
+    for (Move move = 0; move < 4; move++)
+        if ((child = new_move(parent, move)) != NULL)
+            pq_insert(pq, child);
 }
 
 // checks if given puzzle is solvable
@@ -212,8 +190,10 @@ bool is_puzzle_solvable(State state)
 void destroy_puzzle(void* puzzle)
 {
     StateNode p = puzzle;
-    destroy_state(p->state);
-    free(p);
+    if (p == NULL)
+        return;
+    destroy_state_node(p);
+    // free(puzzle);
 }
 
 // compares 2 puzzles based on their g+h evaluation
@@ -232,13 +212,15 @@ void puzzle_solve(State initial, State goal)
     // used to calculate g
     uint depth = 0;
 
+    Stack stack;
+    stack_init(&stack, destroy_puzzle);
+
     // initialize the priority queue
     PriorityQueue pq;
     pq_init(&pq, compare_puzzles, destroy_puzzle);
 
     // list with solution
     StateNode current = init_state_node(initial, 0, heuristic(initial), NULL);
-    current->g = 0;
 
     // insert initial state in PQ
     pq_insert(pq, current);
@@ -247,6 +229,7 @@ void puzzle_solve(State initial, State goal)
     // while there are no nodes to expand 
     while (!pq_is_empty(pq))
     {
+        stack_push(stack, current);
         // pop state with highest priority and add it to the list
         current = pq_remove(pq);
 
@@ -277,13 +260,12 @@ void puzzle_solve(State initial, State goal)
         // path is filled with correct moves, print it
         
         for (int j = i; j >= 0; j--)
-        {
             print_puzzle(path[j]->state);
-        }
 
         free(path);
 
         printf("\nSolved puzzle in %u moves!\n", i);
     }
+    stack_destroy(stack);
     pq_destroy(pq);
 }

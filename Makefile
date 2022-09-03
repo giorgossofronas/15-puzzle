@@ -9,7 +9,7 @@ CC = gcc
 # compiler options
 CFLAGS = -Wall -Werror -g3 -I$(INCLUDE)
 
-OBJS = $(MOD)/PriorityQueue.o $(SRC)/puzzle.o $(SRC)/io.o $(SRC)/main.o
+OBJS = $(MOD)/PriorityQueue.o $(MOD)/Stack.o $(SRC)/puzzle.o $(SRC)/io.o $(SRC)/main.o
 
 EXEC = 8Puzzle
 
@@ -19,8 +19,11 @@ $(EXEC): $(OBJS)
 
 # cleaning
 PHONY clean:
-	rm -f $(OBJS) $(EXEC)
+	@rm -f $(OBJS) $(EXEC)
 
 # compile and run
 run: $(EXEC)
-	./$(EXEC)
+	time ./$(EXEC)
+
+valgrind: $(EXEC)
+	valgrind -s ./$(EXEC)

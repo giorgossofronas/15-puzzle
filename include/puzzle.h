@@ -1,9 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "PriorityQueue.h"
 
-// board size is 3X3
 #define N 3 
 #define BLANK 0
 #define NULLKEY 0xFF
@@ -19,9 +17,6 @@ typedef struct state_struct
     byte** puzzle; // current state / board NxN
     Move move; // move that resulted in this state
 }* State;
-
-// returns true/false depending on if states are equal
-bool is_state_same(State, State);
 
 // allocates memory for a state
 State init_state(void);

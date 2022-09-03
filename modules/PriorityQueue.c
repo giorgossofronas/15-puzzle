@@ -36,7 +36,7 @@ static void bubble_up(PriorityQueue pq, uint node_id)
     uint parent = node_id >> 1; // node's parent. Nodes are 1-based
 
     // if father < node, swap and continue
-    if (pq->compare(pq->array[parent].value, pq->array[node_id].value) < 0)
+    if (pq->compare(pq->array[parent].value, pq->array[node_id].value) <= 0)
     {
         swap(&pq->array[parent], &pq->array[node_id]);
         bubble_up(pq, parent);
