@@ -5,23 +5,24 @@
 #include "Stack.h"
 #include "PriorityQueue.h"
 #include <stdio.h>
+#include <time.h>
 
 typedef struct state_node
 {
-    State state; // void* to previous struct
-    uint g; // depth of current node, AKA moves made from initial to current state
+    State state; 
+    uint g; 
     uint h;
     byte blank_x, blank_y;
-    struct state_node* parent; // void* to parent state
+    struct state_node* parent; 
 }* StateNode;
 
 #define ABS(A, B) ((A > B) ? A - B : B - A)
 
-// manhantan distance heuristic
+
 // sum of the manhanttan distances of each tile from its goal position 
 static uint heuristic(State state)
 {
-    uint sum_manh = 0; // sum of manhanttan distances of misplaced tiles from their right coordinates in a goal state
+    uint sum_manh = 0; 
 
     for (int i = 0; i < N; i++)
         for (int j = 0; j < N; j++)
@@ -43,7 +44,7 @@ bool is_state_same(State one, State two)
 // frees allocated memory of a state
 void destroy_state(State state)
 {
-    if (state == NULL || state->move < 0 || state->move > 3)
+    if (state == NULL)
         return;
     for (int i = 0; i < N; i++)
         free(state->puzzle[i]);
@@ -53,13 +54,12 @@ void destroy_state(State state)
 
 void destroy_state_node(StateNode node)
 {
-    if (node->blank_x < 0 || node->blank_y > 8)
+    if (node == NULL)
         return;
     destroy_state(node->state);
-    //free(node);
+    node->state = NULL;
 }
 
-// returns a state void* to a new created state
 State init_state(void)
 {
     State new = malloc(sizeof(*new));
@@ -77,16 +77,15 @@ State init_state(void)
     return new;
 } 
 
-// returns a StateNode void* to a new created StateNode
 StateNode init_state_node(State state, uint g, uint h, StateNode parent)
 {
     StateNode new = malloc(sizeof(*new));
     assert(new != NULL);
 
-    new->state = state; // copies to new state both the array and move
+    new->state = state; 
     new->g = g;
     new->h = h;
-    new->parent = parent; // connect new state with the parent one
+    new->parent = parent; 
 
     new->blank_x = NULLKEY;
     for (byte i = 0; i < N; i++)
@@ -166,8 +165,7 @@ void expand_state(StateNode parent, PriorityQueue pq)
 // checks if given puzzle is solvable
 bool is_puzzle_solvable(State state)
 {
-    byte* temp = malloc(9);
-    assert(temp != NULL);
+    byte temp[N*N];
 
     int c = 0;
     for (int i = 0; i < N; i++)
@@ -180,20 +178,16 @@ bool is_puzzle_solvable(State state)
             if (temp[j] && temp[i] && temp[i] > temp[j]) 
                 inv_count++;
 
-    free(temp);
-    if (inv_count % 2) 
-        return false;
-    return true;
+    return !(inv_count % 2);
 }
 
 // destroys given puzzle
 void destroy_puzzle(void* puzzle)
 {
     StateNode p = puzzle;
-    if (p == NULL)
-        return;
     destroy_state_node(p);
-    // free(puzzle);
+    puzzle = NULL;
+    p = NULL;
 }
 
 // compares 2 puzzles based on their g+h evaluation
@@ -206,39 +200,49 @@ int compare_puzzles(void* puzzle1, void* puzzle2)
     return f2 - f1;
 }
 
+void random_puzzle(State state)
+{
+    srand(time(NULL));
+
+    for (byte i = 0; i < N * N; i++)
+        state->puzzle[i/N][i%N] = i;
+
+    for (byte i = 0; i < N * N; i++)
+    {
+        byte new_pos = i + rand() / (RAND_MAX / (N * N - i) + 1);
+        // swap
+        byte temp = state->puzzle[new_pos/N][new_pos%N];
+        state->puzzle[new_pos/N][new_pos%N] = state->puzzle[i/N][i%N];
+        state->puzzle[i/N][i%N] = temp;
+    }
+}
+
 // solves given puzzle using A* algorithm; returns the optimal path
 void puzzle_solve(State initial, State goal)
 {
-    // used to calculate g
     uint depth = 0;
 
     Stack stack;
     stack_init(&stack, destroy_puzzle);
 
-    // initialize the priority queue
     PriorityQueue pq;
     pq_init(&pq, compare_puzzles, destroy_puzzle);
 
-    // list with solution
     StateNode current = init_state_node(initial, 0, heuristic(initial), NULL);
 
-    // insert initial state in PQ
     pq_insert(pq, current);
 
-    // current state removed
     // while there are no nodes to expand 
     while (!pq_is_empty(pq))
     {
         stack_push(stack, current);
-        // pop state with highest priority and add it to the list
         current = pq_remove(pq);
 
-        // if current is goal state
         if (is_state_same(current->state, goal)) 
             break;
         
         depth++;
-        // current state isn't the goal one
+        
         // expand current state and insert child-states in PQ
         expand_state(current, pq);
     }
@@ -247,8 +251,7 @@ void puzzle_solve(State initial, State goal)
         return;
     else
     {
-        StateNode* path = malloc((depth+1) * sizeof(StateNode));
-        assert(path != NULL);
+        StateNode path[depth+1];
 
         uint i = 0;
         while (current->parent != NULL)
@@ -257,12 +260,12 @@ void puzzle_solve(State initial, State goal)
             current = current->parent;
         }
         path[i] = current;
-        // path is filled with correct moves, print it
         
         for (int j = i; j >= 0; j--)
+        {
             print_puzzle(path[j]->state);
-
-        free(path);
+            destroy_state_node(path[j]);
+        }
 
         printf("\nSolved puzzle in %u moves!\n", i);
     }

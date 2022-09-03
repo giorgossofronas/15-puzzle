@@ -26,4 +26,4 @@ run: $(EXEC)
 	time ./$(EXEC)
 
 valgrind: $(EXEC)
-	valgrind -s ./$(EXEC)
+	 valgrind --leak-check=full ./$(EXEC)

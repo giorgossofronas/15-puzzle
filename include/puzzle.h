@@ -21,6 +21,10 @@ typedef struct state_struct
 // allocates memory for a state
 State init_state(void);
 
+void destroy_state(State);
+
+void random_puzzle(State);
+
 // checks if puzzle is solvable
 bool is_puzzle_solvable(State);
 
