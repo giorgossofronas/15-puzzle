@@ -18,7 +18,6 @@ typedef struct state_node
 
 #define ABS(A, B) ((A > B) ? A - B : B - A)
 
-
 // sum of the manhanttan distances of each tile from its goal position 
 static uint heuristic(State state)
 {
@@ -176,9 +175,11 @@ bool is_puzzle_solvable(State state)
 void destroy_puzzle(void* puzzle)
 {
     StateNode p = puzzle;
+    if (p == NULL)
+        return;
     destroy_state_node(p);
+    free(puzzle);
     puzzle = NULL;
-    p = NULL;
 }
 
 // compares 2 puzzles based on their g+h evaluation
@@ -213,12 +214,8 @@ void expand_state(StateNode parent, PriorityQueue pq)
 {
     StateNode child; 
     for (Move move = 0; move < 4; move++)
-    {
-        if ((child = new_move(parent, move)) == NULL)
-            continue;
-
-        pq_insert(pq, child);
-    }
+        if ((child = new_move(parent, move)) != NULL)
+            pq_insert(pq, child);
 }
 
 // solves given puzzle using A* algorithm; returns the optimal path
@@ -249,14 +246,11 @@ void puzzle_solve(State initial, State goal)
                 printf("Puzzle already solved.\n");
             else
             {
-                StateNode path[31];
+                StateNode path[32];
 
                 uint i = 0;
-                while (current->parent != NULL)
-                {
+                for (; current->parent != NULL; current = current->parent)
                     path[i++] = current;
-                    current = current->parent;
-                }
                 path[i] = current;
                 
                 for (int j = i; j >= 0; j--)
@@ -264,7 +258,7 @@ void puzzle_solve(State initial, State goal)
                     print_puzzle(path[j]->state);
                     destroy_state_node(path[j]);
                 }
-                printf("\nSolved puzzle in %u moves!\nExplored %u states.\n", i, depth);
+                printf("\b \bs\b \nSolved puzzle in %u moves!\nExplored %u states.\n", i, depth);
             }
             break;
         }
@@ -276,4 +270,5 @@ void puzzle_solve(State initial, State goal)
     }
     stack_destroy(stack);
     pq_destroy(pq);
+    destroy_state(goal);
 }

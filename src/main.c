@@ -44,14 +44,8 @@ int main(void)
         for (int j = 0; j < N; j++)
             goal->puzzle[i][j] = c++;
     
-    // print initial and goal states
-    printf("\nInitial State:\n");
-    print_puzzle(initial);
-    printf("\nGoal State:\n");
-    print_puzzle(goal);
     printf("\nSOLUTION:\n");
 
-    // solve the puzzle
     puzzle_solve(initial, goal);
 
     return 0;

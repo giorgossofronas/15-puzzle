@@ -26,4 +26,4 @@ run: $(EXEC)
 	time ./$(EXEC)
 
 valgrind: $(EXEC)
-	 valgrind --leak-check=full ./$(EXEC)
+	valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(EXEC)
