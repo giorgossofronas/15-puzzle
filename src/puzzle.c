@@ -153,15 +153,6 @@ StateNode new_move(StateNode parent, Move new_move)
     return init_state_node(new, parent->g + 1, heuristic(new), parent);
 }
 
-// expands the parent state
-void expand_state(StateNode parent, PriorityQueue pq)
-{
-    StateNode child; 
-    for (Move move = 0; move < 4; move++)
-        if ((child = new_move(parent, move)) != NULL)
-            pq_insert(pq, child);
-}
-
 // checks if given puzzle is solvable
 bool is_puzzle_solvable(State state)
 {
@@ -217,57 +208,71 @@ void random_puzzle(State state)
     }
 }
 
+// expands the parent state
+void expand_state(StateNode parent, PriorityQueue pq)
+{
+    StateNode child; 
+    for (Move move = 0; move < 4; move++)
+    {
+        if ((child = new_move(parent, move)) == NULL)
+            continue;
+
+        pq_insert(pq, child);
+    }
+}
+
 // solves given puzzle using A* algorithm; returns the optimal path
 void puzzle_solve(State initial, State goal)
 {
     uint depth = 0;
 
-    Stack stack;
-    stack_init(&stack, destroy_puzzle);
-
+    // open list
     PriorityQueue pq;
     pq_init(&pq, compare_puzzles, destroy_puzzle);
 
-    StateNode current = init_state_node(initial, 0, heuristic(initial), NULL);
+    // closed list
+    Stack stack;
+    stack_init(&stack, destroy_puzzle);
+
+    StateNode current = init_state_node(initial, 0, 0, NULL);
 
     pq_insert(pq, current);
 
     // while there are no nodes to expand 
     while (!pq_is_empty(pq))
     {
-        stack_push(stack, current);
         current = pq_remove(pq);
 
         if (is_state_same(current->state, goal)) 
+        {
+            if (current->g == 0)
+                printf("Puzzle already solved.\n");
+            else
+            {
+                StateNode path[31];
+
+                uint i = 0;
+                while (current->parent != NULL)
+                {
+                    path[i++] = current;
+                    current = current->parent;
+                }
+                path[i] = current;
+                
+                for (int j = i; j >= 0; j--)
+                {
+                    print_puzzle(path[j]->state);
+                    destroy_state_node(path[j]);
+                }
+                printf("\nSolved puzzle in %u moves!\nExplored %u states.\n", i, depth);
+            }
             break;
-        
+        }
+        stack_push(stack, current);
         depth++;
-        
+
         // expand current state and insert child-states in PQ
         expand_state(current, pq);
-    }
-    
-    if (depth == 0)
-        return;
-    else
-    {
-        StateNode path[depth+1];
-
-        uint i = 0;
-        while (current->parent != NULL)
-        {
-            path[i++] = current;
-            current = current->parent;
-        }
-        path[i] = current;
-        
-        for (int j = i; j >= 0; j--)
-        {
-            print_puzzle(path[j]->state);
-            destroy_state_node(path[j]);
-        }
-
-        printf("\nSolved puzzle in %u moves!\n", i);
     }
     stack_destroy(stack);
     pq_destroy(pq);
