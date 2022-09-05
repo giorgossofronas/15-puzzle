@@ -119,73 +119,14 @@ After that, the program will ask the user if they would like to play again. <br>
    ```
    
 For more details, check out the **source code** over at the `src` directory.
-    
-## Sample Initial Puzzles
-Some sample initial puzzles you can test!
-<table>
-  <tr>
-    <td>
-      <table>
-        <caption>Puzzle 1</caption>
-        <tr>
-          <td>2</td>
-          <td>3</td>
-          <td>8</td>
-        </tr>
-        <tr>
-          <td> </td>
-          <td>1</td>
-          <td>4</td>
-        </tr>
-        <tr>
-          <td>7</td>
-          <td>6</td>
-          <td>5</td>
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <caption>Puzzle 2</caption>
-        <tr>
-          <td>8</td>
-          <td> </td>
-          <td>6</td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td>4</td>
-          <td>7</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>3</td>
-          <td>1</td>
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <caption>Unsolvable</caption>
-        <tr>
-          <td>8</td>
-          <td>1</td>
-          <td>2</td>
-        </tr>
-        <tr>
-          <td> </td>
-          <td>4</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>7</td>
-          <td>6</td>
-          <td>5</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+
+## Compilation & Use
+A `Makefile` is provided for Linux users.<br>
+Simply run the command:
+```bash 
+$ make run
+``` 
+over at the project's directory to compile and run the program.
 
 > This project was a bonus excercise of Assignment 1 of the course<br> [Data Structures](https://www.di.uoa.gr/en/studies/undergraduate/34), DIT-UoA 2022,
 Giorgos Sofronas.
