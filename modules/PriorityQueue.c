@@ -33,7 +33,7 @@ static void bubble_up(PriorityQueue pq, uint node_id)
     if (node_id == 1)
         return;
 
-    uint parent = node_id >> 1; // node's parent. Nodes are 1-based
+    uint parent = node_id / 2; // node's parent. Nodes are 1-based
 
     // if father < node, swap and continue
     if (pq->compare(pq->array[parent].value, pq->array[node_id].value) <= 0)
@@ -47,7 +47,7 @@ static void bubble_up(PriorityQueue pq, uint node_id)
 static void bubble_down(PriorityQueue pq, uint node_id)
 {
     // find node's children
-    uint left_child = node_id << 1;
+    uint left_child = node_id * 2;
     uint right_child = left_child + 1;
 
     uint size = pq_size(pq);
@@ -91,10 +91,10 @@ void pq_insert(PriorityQueue pq, void* item)
     if (pq->size == pq->capacity)
     {
         // double heap's size
-        HeapNode new_array = realloc(pq->array, pq->capacity << 1 * sizeof(*new_array));
+        HeapNode new_array = realloc(pq->array, pq->capacity * 2 * sizeof(*new_array));
         assert(new_array != NULL);
 
-        pq->capacity <<= 1;
+        pq->capacity *= 2;
         pq->array = new_array;
     }
 

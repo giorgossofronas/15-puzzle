@@ -1,10 +1,10 @@
-#include <stdio.h>
 #include "common.h"
 #include "io.h"
 
+// scans puzzle
 void scan_puzzle(State state) 
 {
-    printf("Please type numbers 1-8 for number tiles and 0 for the blank one.\n");
+    printf("Please enter numbers 1-8 for number tiles and 0 for the blank one.\n");
 
     byte symbol;
 
@@ -19,8 +19,7 @@ void scan_puzzle(State state)
 
             scanf("%hhu", &symbol);
 
-            // check if input is a blank character or is a number greater than 0 and less than 9
-            if(symbol >= 0 && symbol < N * N) 
+            if (symbol >= 0 && symbol < N * N) 
             {
                 // check if input is repeated
                 if(!isNumUsed[symbol]) 
@@ -34,7 +33,8 @@ void scan_puzzle(State state)
                     j--;
                 }
             }
-            else {
+            else 
+            {
                 printf("  Invalid input. Enter a number from 0 to 8.\n");
                 j--;
             }
@@ -43,6 +43,7 @@ void scan_puzzle(State state)
     printf("\n");
 }
 
+// prints given puzzle
 void print_puzzle(State state) 
 {
     printf("\n");

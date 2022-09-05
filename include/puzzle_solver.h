@@ -14,19 +14,18 @@ typedef enum
 
 typedef struct state_struct
 {
-    byte** puzzle; // current state / board NxN
+    byte** puzzle; // board NxN
     Move move; // move that resulted in this state
 }* State;
 
 // allocates memory for a state
 State init_state(void);
 
-void destroy_state(State);
-
+// generates a random puzzle
 void random_puzzle(State);
 
 // checks if puzzle is solvable
 bool is_puzzle_solvable(State);
 
-// solve given puzzle using A* algorithm, returns the path array
+// solves given puzzle using A* Search
 void puzzle_solve(State, State);
