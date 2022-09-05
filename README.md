@@ -121,6 +121,7 @@ After that, the program will ask the user if they would like to play again. <br>
 For more details, check out the **source code** over at the `src` directory.
 
 ## Compilation & Use
+### There are pre-compiled executable files for Windows and Linux over at `exec` directory for users to download.
 A `Makefile` is provided for Linux users.<br>
 Simply run the command:
 ```bash 
