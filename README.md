@@ -22,7 +22,7 @@ After that, the program will ask the user if they would like to play again. <br>
   typedef unsigned char byte;
   ```
 
-- The `src` directory contains, among other files, the `puzzle_solver.c` file, in which the whole A.I. solver is built. To be more specific, the program uses two structs to represent the puzzle. (*Note: **Move** enum and **State** struct are part of `"puzzle_solver.h"` file*)<br>
+- The `src` directory contains, among other files, the `puzzle_solver.c` file, in which the whole A.I. solver is built. To be more specific, the program uses an enum and two structs to represent the puzzle. <br>(*Note: **Move** enum and **State** struct are part of `"puzzle_solver.h"` file*)<br>
   - a simple **Move** enum:
   ```c
   typedef enum
@@ -91,9 +91,9 @@ After that, the program will ask the user if they would like to play again. <br>
       return sum_manh;
   }
    ```
-   <br>To improve time complexity, instead of constantly calling `heuristic(current_state)` for each newly created puzzle, we use a different function to calculate the h value of a new puzzle.<br>When a new state is generated the previous (parent node's) heuristic changes only based on two puzzle-tiles:<br>
-      -> the blank one<br>
-      -> the one taking blank one's place<br>
+   <br>To improve time complexity, instead of constantly calling `heuristic(current_state)` for each newly created puzzle, we use a different function to calculate the h value of a new puzzle.<br>When a new state is generated the previous (parent node's) heuristic changes only based on two puzzle-tiles:
+<br>    (1) the blank one
+<br>    (2) the one taking blank one's place<br><br>
  Therefore, instead of recalculating the whole puzzle's sum of manhanttan distances(md),
    we just remove the md of the the two tiles, from the old puzzle, and add their new mds 
    in the h-sum.
