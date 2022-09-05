@@ -122,7 +122,7 @@ static uint heuristic(State state)
    Thus, instead of recalculating the whole puzzle's sum of manhanttan distances(md),
    we just remove the md of the the two tiles from the old puzzle and add their new mds 
    in the sum */
-static uint heuristic_fix(StateNode old_puzzle, StateNode new_puzzle)
+static int heuristic_fix(StateNode old_puzzle, StateNode new_puzzle)
 {
     byte x1 = old_puzzle->state->puzzle[new_puzzle->blank_row][new_puzzle->blank_col] / N;
     byte y1 = old_puzzle->state->puzzle[new_puzzle->blank_row][new_puzzle->blank_col] % N;
