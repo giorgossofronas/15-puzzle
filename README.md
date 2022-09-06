@@ -106,8 +106,8 @@ After that, the program will ask the user if they would like to play again. <br>
        byte x2 = new_puzzle->state->puzzle[old_puzzle->blank_row][old_puzzle->blank_col] / N;
        byte y2 = new_puzzle->state->puzzle[old_puzzle->blank_row][old_puzzle->blank_col] % N;
 
-       uint old_manh = ABS(x1, new_puzzle->blank_row) + ABS(y1, new_puzzle->blank_col);
-       uint new_manh = ABS(x2, old_puzzle->blank_row) + ABS(y2, old_puzzle->blank_col);
+       int old_manh = ABS(x1, new_puzzle->blank_row) + ABS(y1, new_puzzle->blank_col);
+       int new_manh = ABS(x2, old_puzzle->blank_row) + ABS(y2, old_puzzle->blank_col);
 
        return new_manh - old_manh;
   }
