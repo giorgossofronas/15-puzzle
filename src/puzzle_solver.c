@@ -63,23 +63,16 @@ static StateNode init_state_node(State state, uint g, StateNode parent)
 }
 
 // frees allocated memory of a state
-static void destroy_state(State state)
+static void destroy_state(State* state)
 {
-    if (state == NULL)
+    if (*state == NULL)
         return;
-    for (int i = 0; i < N; i++)
-        free(state->puzzle[i]);
-    free(state->puzzle);
-    free(state);
-}
 
-// destroys state node
-static void destroy_state_node(StateNode node)
-{
-    if (node == NULL)
-        return;
-    destroy_state(node->state);
-    node->state = NULL;
+    for (int i = 0; i < N; i++)
+        free((*state)->puzzle[i]);
+    free((*state)->puzzle);
+    free(*state);
+    state = NULL;
 }
 
 // destroys given puzzle
@@ -88,7 +81,8 @@ static void destroy_puzzle(void* puzzle)
     StateNode p = puzzle;
     if (p == NULL)
         return;
-    destroy_state_node(p);
+
+    destroy_state(&p->state);
     free(puzzle);
     puzzle = NULL;
 }
@@ -185,7 +179,7 @@ static StateNode new_move(StateNode parent, Move new_move)
     }
     else
     {
-        destroy_state(new);
+        destroy_state(&new);
         return NULL;
     }
     new->move = new_move;
@@ -243,19 +237,21 @@ void puzzle_solve(State initial, State goal)
             }
             else
             {
-                StateNode path[32]; // solution path array
+                StateNode* path = malloc(32 * sizeof(StateNode)); // solution path array
+                assert(path != NULL);
 
-                uint i = 0;
-                for (; current->parent != NULL; current = current->parent)
-                    path[i++] = current;
-                path[i] = current;
+                StateNode node;
+                int i = 0;
+                for (node = current; node->parent != NULL; node = node->parent)
+                    path[i++] = node;
+                path[i] = node;
                 
                 for (int j = i; j >= 0; j--)
-                {
                     print_puzzle(path[j]->state);
-                    destroy_state_node(path[j]);
-                }
+
                 printf("\b \b\b \nSolved puzzle in %u moves!\n", i);
+
+                free(path);
             }
             break;
         }
@@ -266,9 +262,10 @@ void puzzle_solve(State initial, State goal)
         // expand current state
         expand_state(current, pq);
     }
-    stack_destroy(stack);
+    destroy_puzzle(current);
+    destroy_state(&goal);
     pq_destroy(pq);
-    destroy_state(goal);
+    stack_destroy(stack);
 }
 
 // checks if given puzzle is solvable
