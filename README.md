@@ -2,7 +2,7 @@
 
 An A.I. solver made in C simulating the `8-Puzzle` game on terminal.<br>
 Given an initial 3x3 puzzle, the aim is to reach a specific goal-puzzle in the minimum number of moves. <br>
-The A.I. solver achieves that using [A* search](https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=*%2Dlike%20algorithm.-,Description,shortest%20time%2C%20etc.) and a [Manhantann distance](https://en.wikipedia.org/wiki/Taxicab_geometry) heuristic.
+The A.I. solver achieves that using [A* search](https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=*%2Dlike%20algorithm.-,Description,shortest%20time%2C%20etc.) and a [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry) heuristic.
 
 ## How to Play
   - Type `0` to input your own initial puzzle 
@@ -77,9 +77,9 @@ After that, the program will ask the user if they would like to play again. <br>
    
    Another thing worth mentioning is how the **state evaluation** works. Simply, the state with the lowest f has priority, with **f = g + h**.<br>
    - **g: node depth**, meaning number of moves needed to go from initial state to current
-   - **h: heuristic evaluation**. This implementation uses a Manhantann distance heuristic:
+   - **h: heuristic evaluation**. This implementation uses a Manhattan distance heuristic:
    ```c
-  // sum of the manhanttan distances of each tile from its goal position 
+  // sum of the manhattan distances of each tile from its goal position 
   static uint heuristic(State state)
   {       
       uint sum_manh = 0; 
@@ -94,7 +94,7 @@ After that, the program will ask the user if they would like to play again. <br>
    <br>To improve time complexity, instead of constantly calling `heuristic(current_state)` for each newly created puzzle, we use a different function to calculate the h value of a new puzzle.<br>When a new state is generated the previous (parent node's) heuristic changes only based on two puzzle-tiles:
 <br>    (1) the blank one
 <br>    (2) the one taking blank one's place<br><br>
- Therefore, instead of recalculating the whole puzzle's sum of manhanttan distances(md),
+ Therefore, instead of recalculating the whole puzzle's sum of manhattan distances(md),
    we just remove the md of the the two tiles, from the old puzzle, and add their new mds 
    in the h-sum.
    ```c
