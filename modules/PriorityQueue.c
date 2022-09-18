@@ -6,7 +6,7 @@
 
 typedef struct heap_node
 {
-    void* value;
+	void* value;
 }* HeapNode;
 
 struct priority_queue
