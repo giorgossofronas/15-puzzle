@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-#define HEAP_MIN_CAPACITY 10
-
 typedef struct priority_queue* PriorityQueue;
 
 // initializes an empty priority queue

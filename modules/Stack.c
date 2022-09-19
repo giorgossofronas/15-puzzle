@@ -10,17 +10,15 @@ typedef struct stack_node
 
 struct stack_struct
 {
-    StackNode top; // pointer to stack's top
-    uint size; // stack's size
+    StackNode top;
+    uint size;
     DestroyFunc destroy;
 };
-
-// Stack ADT functions
 
 // initializes an empty stack
 void stack_init(Stack* stack, DestroyFunc destroy)
 {
-    (*stack) = malloc(sizeof(struct stack_struct));
+    *stack = malloc(sizeof(struct stack_struct));
     assert(*stack != NULL);
 
     (*stack)->top = NULL;
@@ -30,7 +28,9 @@ void stack_init(Stack* stack, DestroyFunc destroy)
 
 // pushes a new item on top of the stack
 void stack_push(Stack stack, void* item)
-{ 
+{
+    assert(stack != NULL);
+
     StackNode new = malloc(sizeof(struct stack_node));
     assert(new != NULL);
 
@@ -48,9 +48,12 @@ void* stack_pop(Stack stack)
     
     void* item = stack->top->data;
     StackNode new_top = stack->top->next;
+
     free(stack->top);
     stack->size--;
+
     stack->top = new_top;
+
     return item;
 }
 
@@ -73,6 +76,7 @@ void stack_destroy(Stack stack)
         stack->top = node;
         if (node != NULL) 
             node = node->next;
+
         stack->size--;
     }
     free(stack);
@@ -81,12 +85,14 @@ void stack_destroy(Stack stack)
 // returns the number of elements in the stack
 uint stack_size(Stack stack)
 {
+    assert(stack != NULL);
     return stack->size;
 }
 
 // checks if stack is empty or not
 bool stack_is_empty(Stack stack)
 {
+    assert(stack != NULL);
     return !stack_size(stack);
 }
 
@@ -99,5 +105,6 @@ void* stack_top(Stack stack)
 // sets as new DestroyFunc of given stack the given one
 void stack_set_destroy(Stack stack, DestroyFunc destroy)
 {
+    assert(stack != NULL);
     stack->destroy = destroy;
 }

@@ -11,12 +11,16 @@ typedef struct heap_node
 
 struct priority_queue
 {
-    HeapNode array; // heap array
-    uint size; // number of elements
-    uint capacity; // max number of elements
+    HeapNode array;
+    uint size;
+    uint capacity;
     CompareFunc compare;
     DestroyFunc destroy;
 };
+
+#define HEAP_MIN_CAPACITY 64
+
+#define ROOT 1
 
 // swaps two heap nodes
 static void swap(HeapNode a, HeapNode b)
@@ -30,13 +34,13 @@ static void swap(HeapNode a, HeapNode b)
 static void bubble_up(PriorityQueue pq, uint node_id)
 {
     // if root
-    if (node_id == 1)
+    if (node_id == ROOT)
         return;
 
     uint parent = node_id / 2; // node's parent. Nodes are 1-based
 
     // if father < node, swap and continue
-    if (pq->compare(pq->array[parent].value, pq->array[node_id].value) <= 0)
+    if (pq->compare(pq->array[parent].value, pq->array[node_id].value) < 0)
     {
         swap(&pq->array[parent], &pq->array[node_id]);
         bubble_up(pq, parent);
@@ -86,6 +90,8 @@ void pq_init(PriorityQueue* pq, CompareFunc compare, DestroyFunc destroy)
 // inserts given item in pq
 void pq_insert(PriorityQueue pq, void* item)
 {
+    assert(pq != NULL);
+
     pq->size++;
 
     if (pq->size == pq->capacity)
@@ -112,14 +118,14 @@ void* pq_remove(PriorityQueue pq)
 
     // save element to return it
     void* item = pq->array[1].value;
-    pq->array[1].value = NULL;
+    pq->array[ROOT].value = NULL;
 
-    swap(&pq->array[1], &pq->array[pq->size]);
+    swap(&pq->array[ROOT], &pq->array[pq->size]);
 
     pq->size--;
 
     // heapify
-    bubble_down(pq, 1);
+    bubble_down(pq, ROOT);
 
     return item;
 }
@@ -127,11 +133,12 @@ void* pq_remove(PriorityQueue pq)
 // destroys given pq
 void pq_destroy(PriorityQueue pq)
 {
+    assert(pq != NULL);
+
     if (pq->destroy != NULL)
-    {
         for (uint i = 1; i <= pq->size; i++)
             pq->destroy(pq->array[i].value);
-    }
+    
     free(pq->array);
     free(pq);
 }
@@ -139,23 +146,27 @@ void pq_destroy(PriorityQueue pq)
 // returns pq's size
 uint pq_size(PriorityQueue pq)
 {
+    assert(pq != NULL);
     return pq->size;
 }
 
 // checks if pq is empty
 bool pq_is_empty(PriorityQueue pq)
 {
+    assert(pq != NULL);
     return !pq_size(pq);
 }
 
 // sets as new CompareFunc of given priority the given one
 void pq_set_compare(PriorityQueue pq, CompareFunc compare)
 {
+    assert(pq != NULL);
     pq->compare = compare;
 }
 
 // sets as new DestroyFunc of given priority queue the given one
 void pq_set_destroy(PriorityQueue pq, DestroyFunc destroy)
 {
+    assert(pq != NULL);
     pq->destroy = destroy;
 }

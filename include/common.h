@@ -1,10 +1,8 @@
-// common includes/typedefs 
-
 #pragma once
 
-#include <stdbool.h>
+// common includes/typedefs 
 
-typedef void* Pointer;
+#include <stdbool.h>
 
 typedef unsigned int uint;
 

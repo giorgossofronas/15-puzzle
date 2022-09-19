@@ -54,7 +54,7 @@ After that, the program will ask the user if they would like to play again. <br>
 ## About the A.I. Solver
   The core of the A* Search algorithm involves:<br>
    - a [Priority Queue](https://github.com/giorgossofronas/Abstract-Data-Types/tree/main/modules/PriorityQueue) used to evaluate states and remove them in proper order
-   - a [Stack](https://github.com/giorgossofronas/Abstract-Data-Types/tree/main/modules/Stack) used to store all removed StateNodes and deallocate used memory
+   - a [Stack](https://github.com/giorgossofronas/Abstract-Data-Types/tree/main/modules/Stack) used to store all removed StateNodes and de-allocate used memory
    - a constant while loop assuring that the priority queue isn't empty
    - state expansion, meaning creation of child-states based on all possible moves
    ```c
@@ -121,7 +121,6 @@ After that, the program will ask the user if they would like to play again. <br>
 For more details, check out the **source code** over at the `src` directory.
 
 ## Compilation & Use
-#### There are pre-compiled executable files for Windows and Linux over at `exec` directory for users to download.
 A `Makefile` is provided for Windows and Linux users.<br>
 Simply run the command:
 ```bash 

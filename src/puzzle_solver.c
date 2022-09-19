@@ -5,6 +5,7 @@
 #include "Stack.h"
 #include "PriorityQueue.h"
 
+// | A - B |
 #define ABS(A, B) ((A > B) ? A - B : B - A)
 
 typedef struct state_node
@@ -93,8 +94,10 @@ static int compare_puzzles(void* puzzle1, void* puzzle2)
 {
     StateNode p1 = puzzle1;
     StateNode p2 = puzzle2;
+
     int f1 = p1->g + p1->h;
     int f2 = p2->g + p2->h;
+    
     return f2 - f1;
 }
 

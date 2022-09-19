@@ -3,6 +3,7 @@
 int main(void)
 {
     char input;
+    
     do
     {
         printf("\nTHE 8-PUZZLE!!!\n");
@@ -48,6 +49,7 @@ int main(void)
                 break;
     } 
     while (input != 'N' && input != 'n');
+
     printf("Thanks for playing!\n");
     return 0;
 }
