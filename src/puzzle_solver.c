@@ -2,20 +2,12 @@
 #include <assert.h>
 #include <time.h>
 #include "io.h"
+#include "puzzle_solver.h"
 #include "Stack.h"
 #include "PriorityQueue.h"
 
 // | A - B |
 #define ABS(A, B) ((A > B) ? A - B : B - A)
-
-typedef struct state_node
-{
-    State state; 
-    uint g; 
-    uint h;
-    byte blank_row, blank_col; // blank tile's coordinates
-    struct state_node* parent; 
-}* StateNode;
 
 // initializes a new state
 State init_state(void)
@@ -35,31 +27,17 @@ State init_state(void)
 } 
 
 // initializes a new state node
-static StateNode init_state_node(State state, uint g, StateNode parent)
+static StateNode init_state_node(State state, StateNode parent, byte brow, byte bcol)
 {
     StateNode new = malloc(sizeof(*new));
     assert(new != NULL);
 
     new->state = state; 
-    new->g = g;
+    new->g = parent != NULL ? parent->g + 1 : 0;
     new->parent = parent; 
-
-    // find blank tile's coordinates
-    new->blank_row = NULLKEY;
-    for (byte i = 0; i < N; i++)
-    {
-        for (byte j = 0; j < N; j++)
-        {
-            if (state->puzzle[i][j] == BLANK)
-            {
-                new->blank_row = i;
-                new->blank_col = j;
-                break;
-            }
-        }
-        if (new->blank_row != NULLKEY)
-            break;
-    }
+    new->blank_row = brow;
+    new->blank_col = bcol;
+    
     return new;
 }
 
@@ -144,50 +122,22 @@ static bool is_state_same(State one, State two)
 }
 
 // generates a new state, from parent based on new move
-static StateNode new_move(StateNode parent, Move new_move)
+static StateNode new_move(StateNode parent, Move new_move, byte blank_row, byte blank_col)
 {
     State new = init_state();
+    new->move = new_move;
 
     // copy current state in new state
     for (int i = 0; i < N; i++)
         for (int j = 0; j < N; j++)
             new->puzzle[i][j] = parent->state->puzzle[i][j];
+
+    // swap
+    byte temp = new->puzzle[parent->blank_row][parent->blank_col];
+    new->puzzle[parent->blank_row][parent->blank_col] = new->puzzle[blank_row][blank_col];
+    new->puzzle[blank_row][blank_col] = temp;
     
-    // save previous move that lead to current state to avoid moving blank back and forth
-    Move previous_move = parent->state->move;
-
-    byte x = parent->blank_row;
-    byte y = parent->blank_col;
-
-    // check if coordinates are valid to execute new_move
-    if (new_move == UP && previous_move != DOWN && x >= 1)
-    {
-        new->puzzle[x][y] = new->puzzle[x-1][y];
-        new->puzzle[x-1][y] = BLANK;
-    }
-    else if (new_move == RIGHT && previous_move != LEFT && y + 1 < N)
-    {
-        new->puzzle[x][y] = new->puzzle[x][y+1];
-        new->puzzle[x][y+1] = BLANK;
-    }
-    else if (new_move == DOWN && previous_move != UP && x + 1 < N)
-    {
-        new->puzzle[x][y] = new->puzzle[x+1][y];
-        new->puzzle[x+1][y] = BLANK;
-    }
-    else if (new_move == LEFT && previous_move != RIGHT && y >= 1)
-    {
-        new->puzzle[x][y] = new->puzzle[x][y-1];
-        new->puzzle[x][y-1] = BLANK;
-    }
-    else
-    {
-        destroy_state(&new);
-        return NULL;
-    }
-    new->move = new_move;
-
-    StateNode new_node = init_state_node(new, parent->g + 1, parent);
+    StateNode new_node = init_state_node(new, parent, blank_row, blank_col);
 
     // new node's heuristic is parent's heuristic changed based on made move
     new_node->h = parent->h + heuristic_fix(parent, new_node);
@@ -197,23 +147,61 @@ static StateNode new_move(StateNode parent, Move new_move)
 
 // expands the parent state and inserts children in pq
 static void expand_state(StateNode parent, PriorityQueue pq)
-{
-    StateNode child; 
-    for (Move move = 0; move < 4; move++)
-        if ((child = new_move(parent, move)) != NULL)
-            pq_insert(pq, child);
+{ 
+    // opposites of moves' default order
+    Move opposite[] = {DOWN, LEFT, UP, RIGHT};
+
+    // blank's offsets in each new move
+    byte row_offset[] = {-1, 0, 1, 0};
+    byte col_offset[] = {0, 1, 0, -1};
+
+    for (Move move = UP; move != INVALID; move++)
+    {
+        // avoid going back-and-forth
+        if (parent->state->move == opposite[move])
+            continue;
+
+        // new empty space coordinates based on move
+        byte blank_row = parent->blank_row + row_offset[move];
+        byte blank_col = parent->blank_col + col_offset[move];
+
+        // out of board bounds
+        if (blank_row < 0 || blank_row >= N || blank_col < 0 || blank_col >= N)
+            continue;
+
+        pq_insert(pq, new_move(parent, move, blank_row, blank_col));
+    }
 }
 
 // solves given puzzle using A* Search
 void puzzle_solve(State initial, State goal)
 {
+    // find blank tile's coordinates in initial puzzle
+    byte row = NULLKEY, col;
+    for (byte i = 0; i < N; i++)
+    {
+        for (byte j = 0; j < N; j++)
+        {
+            if (initial->puzzle[i][j] == BLANK)
+            {
+                row = i;
+                col = j;
+                break;
+            }
+        }
+        if (row != NULLKEY)
+            break;
+    }
+
+    // A* Search
+
     PriorityQueue pq;
     pq_init(&pq, compare_puzzles, destroy_puzzle);
 
     Stack stack;
     stack_init(&stack, destroy_puzzle);
 
-    StateNode current = init_state_node(initial, 0, NULL);
+    StateNode current = init_state_node(initial, NULL, row, col);
     current->h = heuristic(current->state);
 
     pq_insert(pq, current);
@@ -240,21 +228,8 @@ void puzzle_solve(State initial, State goal)
             }
             else
             {
-                StateNode* path = malloc(32 * sizeof(StateNode)); // solution path array
-                assert(path != NULL);
-
-                StateNode node;
-                int i = 0;
-                for (node = current; node->parent != NULL; node = node->parent)
-                    path[i++] = node;
-                path[i] = node;
-                
-                for (int j = i; j >= 0; j--)
-                    print_puzzle(path[j]->state);
-
-                printf("\b \b\b \nSolved puzzle in %u moves!\n", i);
-
-                free(path);
+                print_solution_path(current);
+                printf("\b \b\b \nSolved puzzle in %u moves!\n", current->g);
             }
             break;
         }

@@ -3,10 +3,10 @@
 int main(void)
 {
     char input;
-    
     do
     {
-        printf("\nTHE 8-PUZZLE!!!\n");
+        printf("\nTHE 8-PUZZLE SOLVER!!!\n");
+        
         printf("- Type 0 to give your own initial puzzle.\n");
         printf("- Type 1 to generate random initial puzzle.\n");
         

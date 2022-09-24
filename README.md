@@ -22,7 +22,7 @@ After that, the program will ask the user if they would like to play again. <br>
   typedef unsigned char byte;
   ```
 
-- The `src` directory contains, among other files, the `puzzle_solver.c` file, in which the whole A.I. solver is built. To be more specific, the program uses an enum and two structs to represent the puzzle. <br>(*Note: **Move** enum and **State** struct are part of `"puzzle_solver.h"` file*)<br>
+- The `src` directory contains, among other files, the `puzzle_solver.c` file, in which the whole A.I. solver is built. To be more specific, the program uses an enum and two structs to represent the puzzle. <br>(*which are part of `"puzzle_solver.h"` file*)<br>
   - a simple **Move** enum:
   ```c
   typedef enum
