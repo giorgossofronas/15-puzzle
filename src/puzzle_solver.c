@@ -240,6 +240,7 @@ void puzzle_solve(State initial, State goal)
         // expand current state
         expand_state(current, pq);
     }
+    
     destroy_puzzle(current);
     destroy_state(&goal);
     pq_destroy(pq);

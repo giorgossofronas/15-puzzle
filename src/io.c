@@ -74,7 +74,7 @@ void print_puzzle(State state)
     printf("▼");
 }
 
-// prints puzzle solution path
+// Prints puzzle solution path
 void print_solution_path(StateNode puzzle)
 {
     if (puzzle == NULL)
