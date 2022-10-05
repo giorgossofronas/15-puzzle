@@ -3,21 +3,24 @@ MODULES = ./modules
 INCLUDE = ./include
 SRC = ./src
 
-# compiler
-CC = gcc
+MAKE += --silent
 
-EXEC = 8Puzzle
+CC = gcc
+EXEC = 15PuzzleSolver
 
 # if on Windows
 ifeq ($(OS), win) 
 	CC = x86_64-w64-mingw32-gcc
-	EXEC = 8Puzzle.exe
+	EXEC = 15PuzzleSolver.exe
 endif
 
-# compiler options
-CFLAGS = -Wall -Werror -g3 -I$(INCLUDE)
+CFLAGS = -Wall -Werror -Wextra -O3 -I$(INCLUDE)
 
-OBJS = $(MODULES)/PriorityQueue.o $(MODULES)/Stack.o $(SRC)/puzzle_solver.o $(SRC)/io.o $(SRC)/main.o
+OBJS = $(MODULES)/Stack.o $(SRC)/heuristic.o $(SRC)/puzzle_solver.o $(SRC)/io.o $(SRC)/main.o
+
+all:
+	@$(MAKE) clean
+	@$(MAKE) run
 
 # compile executable
 $(EXEC): $(OBJS)
@@ -26,11 +29,8 @@ $(EXEC): $(OBJS)
 # cleaning
 .PHONY: clean
 clean:
-	@rm -f $(OBJS) $(EXEC)
+	@$(RM) $(OBJS) $(EXEC)
 
 # compile and run
 run: $(EXEC)
 	./$(EXEC)
-
-valgrind: $(EXEC)
-	valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(EXEC)

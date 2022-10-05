@@ -18,7 +18,7 @@ void* stack_pop(Stack);
 void stack_destroy(Stack);
 
 // returns the number of elements in the stack
-uint stack_size(Stack);
+u_int64_t stack_size(Stack);
 
 // returns true/false depending on if stack is empty or not
 bool stack_is_empty(Stack);
