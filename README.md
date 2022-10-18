@@ -14,6 +14,6 @@ Then press `ENTER` and the optimal solution will appear step-by-step.
 A `Makefile` is provided for Windows and Linux users.<br>
 Simply run the command:
 ```bash 
-$ make run
+~$ make run
 ``` 
 over at the project's directory to compile and run the program.
