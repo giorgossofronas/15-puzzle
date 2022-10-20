@@ -9,8 +9,8 @@ The A.I. solver achieves that using [IDA* search](https://en.wikipedia.org/wiki/
 <img src="https://miro.medium.com/max/600/1*Kg5sN-5U3Q7hevW9qhz2rA.gif"
   alt="image_logo"
   align="right"
-  width="175"
-  height="175" />
+  width="145"
+  height="145" />
 
   - Type `0` to input your own initial puzzle 
   - Type `1` to generate a random initial puzzle<br>
