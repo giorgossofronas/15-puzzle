@@ -3,8 +3,8 @@
 <img src="https://miro.medium.com/max/600/1*Kg5sN-5U3Q7hevW9qhz2rA.gif"
   alt="image_logo"
   align="right"
-  width="225"
-  height="225" />
+  width="175"
+  height="175" />
 
 An A.I. solver made in C simulating the [15-Puzzle](https://en.wikipedia.org/wiki/15_puzzle) game on terminal.<br>
 Given an initial 4x4 puzzle, the aim is to reach a specific goal-puzzle in the minimum number of moves.<br>
