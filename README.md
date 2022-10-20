@@ -17,3 +17,6 @@ Simply run the command:
 ~$ make run
 ``` 
 over at the project's directory to compile and run the program.
+
+---
+© Giorgos Sofronas
