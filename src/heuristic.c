@@ -1,8 +1,7 @@
 #include "heuristic.h"
 
 // sum of the manhanttan distances of each tile from its goal position 
-uint manhattan_distance(State state)
-{
+uint manhattan_distance(State state) {
     uint sum_manh = 0; 
 
     for (u_int8_t i = 0; i < N; i++)
@@ -21,8 +20,7 @@ uint manhattan_distance(State state)
                8 7 15 13
    would be converted into this hex number:
        0xC590E234BA6187FD                    */
-static u_int64_t state_to_hex(State state)
-{
+static u_int64_t state_to_hex(State state) {
     u_int64_t result = 0;
     u_int64_t power16 = 1; // power of 16 from 0-15
 
@@ -37,15 +35,13 @@ static u_int64_t state_to_hex(State state)
 
 // The next two functions calculate the linear conflicts of a given 15-puzzle
 // source code from @asarandi | link: https://github.com/asarandi/n-puzzle
-static uint count_conflicts(int candidate, int solved, int result)
-{
+static uint count_conflicts(int candidate, int solved, int result) {
     int i, j, ti, tj, f, k, counts[4];
 
     for (i = 0; i < 4; i++)
         counts[i] = 0;
 
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         if (!(k = (candidate >> ((3 - i) << 2)) & 15))
             continue;
 
@@ -56,8 +52,7 @@ static uint count_conflicts(int candidate, int solved, int result)
         if (!f)
             continue;
 
-        for (j = 0; j < 4; j++)
-        {
+        for (j = 0; j < 4; j++) {
             if (i == j)
                 continue;
             if (!(k = (candidate >> ((3 - j) << 2)) & 15))
@@ -86,21 +81,18 @@ static uint count_conflicts(int candidate, int solved, int result)
     return count_conflicts(candidate, solved, ++result);
 }
 
-uint linear_conflict(State current_state)
-{
+uint linear_conflict(State current_state) {
     uint lc = 0;
     int candidate, solved;
 
     u_int64_t state = state_to_hex(current_state);
 
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         candidate = (int)((state >> ((3 - i) << 4)) & 0xFFFF);
         solved = (int)((GOAL_STATE_HEX >> ((3 - i) << 4)) & 0xFFFF);
         lc += count_conflicts(candidate, solved, 0);
 
-        for (int j = candidate = solved = 0; j < N; j++)
-        {
+        for (int j = candidate = solved = 0; j < N; j++) {
             candidate = (candidate << 4) | ((state >> (60 - ((i + (j << 2)) << 2))) & 15);
             solved = (solved << 4) | ((GOAL_STATE_HEX >> (60 - ((i + (j << 2)) << 2))) & 15);
         }

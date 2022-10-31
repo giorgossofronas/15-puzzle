@@ -1,7 +1,6 @@
 #include "io.h"
 
-int main(void)
-{
+int main(void) {
     printf("\nThe 15-puzzle Solver!!!\n");
 
     printf("\n- Type 0 to give your own initial puzzle.\n");
@@ -18,27 +17,22 @@ int main(void)
 
     if (input == '1') // random initial puzzle
         random_puzzle(initial);
-    else if (input == '0') // user's input puzzle
-    {
+    else if (input == '0') {
         printf("Give initial puzzle:\n");
         scan_puzzle(initial);
-        while (!is_puzzle_solvable(initial))
-        {
+        while (!is_puzzle_solvable(initial)) {
             printf("\nGiven puzzle is unsolvable.\nGive a different one:\n");
             scan_puzzle(initial);
         }
     }
     else
-        return EXIT_FAILURE;
+        return 1;
 
     // find blank tile's coordinates in initial puzzle
     initial->blank_row = 0xF;
-    for (u_int8_t i = 0; i < N && initial->blank_row == 0xF; i++)
-    {
-        for (u_int8_t j = 0; j < N; j++)
-        {
-            if (!initial->puzzle[i][j])
-            {
+    for (u_int8_t i = 0; i < N && initial->blank_row == 0xF; i++) {
+        for (u_int8_t j = 0; j < N; j++) {
+            if (!initial->puzzle[i][j]) {
                 initial->blank_row = i;
                 initial->blank_col = j;
                 break;
@@ -51,5 +45,5 @@ int main(void)
 
     puzzle_solve(initial);
 
-    return EXIT_SUCCESS;
+    return 0;
 }

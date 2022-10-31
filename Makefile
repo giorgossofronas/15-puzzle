@@ -1,5 +1,4 @@
 # paths
-MODULES = ./modules
 INCLUDE = ./include
 SRC = ./src
 
@@ -16,7 +15,7 @@ endif
 
 CFLAGS = -Wall -Werror -Wextra -O3 -I$(INCLUDE)
 
-OBJS = $(MODULES)/Stack.o $(SRC)/heuristic.o $(SRC)/puzzle_solver.o $(SRC)/io.o $(SRC)/main.o
+OBJS = $(SRC)/Stack.o $(SRC)/heuristic.o $(SRC)/puzzle_solver.o $(SRC)/io.o $(SRC)/main.o
 
 all:
 	@$(MAKE) clean
@@ -27,10 +26,12 @@ $(EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $(EXEC) $(CFLAGS)
 
 # cleaning
-.PHONY: clean
 clean:
 	@$(RM) $(OBJS) $(EXEC)
 
 # compile and run
 run: $(EXEC)
 	./$(EXEC)
+	$(RM) $(SRC)/*.o
+
+.PHONY: all clean run

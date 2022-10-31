@@ -18,16 +18,14 @@ static int8_t row_offset[] = {0, 0, -1, 1};
 static int8_t col_offset[] = {-1, 1, 0, 0};
 
 // initializes a new state
-State init_state(void)
-{
+State init_state(void) {
     State new = malloc(sizeof(*new));
     assert(new != NULL);
     return new;
 }
 
 // generates a new state, from parent based on new move
-static State new_move(State parent, Move new_move)
-{
+static State new_move(State parent, Move new_move) {
     State new = init_state();
 
     // copy current state in new state
@@ -52,28 +50,23 @@ static State new_move(State parent, Move new_move)
 }
 
 // returns heuristic of given state
-static inline uint heuristic(State state)
-{
+static inline uint heuristic(State state) {
     return manhattan_distance(state) + linear_conflict(state);
 }
 
 // opposite of given move
-static inline Move opposite_move(Move move)
-{
+static inline Move opposite_move(Move move) {
     return move & 1 ? move - 1 : move + 1;
 }
 
 // recursive IDA*
-static uint ida(State state, uint treshold, Stack visited)
-{
-    if (state->parent != NULL)
-    {
+static uint ida(State state, uint treshold, Stack visited) {
+    if (state->parent != NULL) {
         stack_push(visited, state);
         state->h = heuristic(state);
     }
 
-    if (!state->h)
-    {
+    if (!state->h) {
         print_solution(state);
         return 0;
     }
@@ -86,8 +79,7 @@ static uint ida(State state, uint treshold, Stack visited)
 
     u_int8_t val = state->blank_row * N + state->blank_col;
 
-    for (Move move = 0; move < 4; move++)
-    {
+    for (Move move = 0; move < 4; move++) {
         // out of bounds
         if (!ap_ops[move][val])
             continue;
@@ -106,8 +98,7 @@ static uint ida(State state, uint treshold, Stack visited)
 }
 
 // IDA* control loop
-void puzzle_solve(State initial)
-{
+void puzzle_solve(State initial) {
     Stack visited;
     stack_init(&visited, free);
 
@@ -124,8 +115,7 @@ void puzzle_solve(State initial)
 
 // checks if given puzzle is solvable
 // inspired by: https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
-bool is_puzzle_solvable(State state)
-{
+bool is_puzzle_solvable(State state) {
     u_int8_t temp[N*N];
     for (u_int8_t i = 0; i < N; i++)
         for (u_int8_t j = 0; j < N; j++)
@@ -147,15 +137,13 @@ bool is_puzzle_solvable(State state)
 }
 
 // generates a random puzzle
-void random_puzzle(State state)
-{
+void random_puzzle(State state) {
     srand(time(NULL));
 
     for (u_int8_t i = 0; i < N * N; i++)
         state->puzzle[i/N][i%N] = i;
 
-    for (u_int8_t i = 0; i < N * N; i++)
-    {
+    for (u_int8_t i = 0; i < N * N; i++) {
         u_int8_t new_pos = i + rand() / (RAND_MAX / (N * N - i) + 1);
         // swap
         u_int8_t temp = state->puzzle[new_pos/N][new_pos%N];
@@ -164,24 +152,20 @@ void random_puzzle(State state)
     }
 
     // produce at most one unsolvable random puzzle
-    if (!is_puzzle_solvable(state))
-    {
+    if (!is_puzzle_solvable(state)) {
         /* switch two consecutive tiles to change number of inversions |
            tiles changed shouldn't contain the blank one */
-        if (!state->puzzle[0][0])
-        {
+        if (!state->puzzle[0][0]) {
             u_int8_t temp = state->puzzle[0][1];
             state->puzzle[0][1] = state->puzzle[0][2];
             state->puzzle[0][2] = temp;
         }
-        else if (!state->puzzle[0][1])
-        {
+        else if (!state->puzzle[0][1]) {
             u_int8_t temp = state->puzzle[1][1];
             state->puzzle[1][1] = state->puzzle[1][0];
             state->puzzle[1][0] = temp;
         }
-        else
-        {
+        else {
             u_int8_t temp = state->puzzle[0][1];
             state->puzzle[0][1] = state->puzzle[0][0];
             state->puzzle[0][0] = temp;

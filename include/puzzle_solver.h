@@ -6,13 +6,11 @@
 #define N 4
 
 // possible moves
-typedef enum
-{
+typedef enum {
     LEFT, RIGHT, UP, DOWN, NON_APPLICABLE
 } Move;
 
-typedef struct state_node
-{
+typedef struct state_node {
     u_int8_t puzzle[N][N];
     uint g;
     uint h;
