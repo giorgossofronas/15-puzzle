@@ -1,8 +1,8 @@
 #include "heuristic.h"
 
 // sum of the manhanttan distances of each tile from its goal position 
-uint manhattan_distance(State state) {
-    uint sum_manh = 0; 
+u_int8_t manhattan_distance(State state) {
+    u_int8_t sum_manh = 0; 
 
     for (u_int8_t i = 0; i < N; i++)
         for (u_int8_t j = 0; j < N; j++)
@@ -35,7 +35,7 @@ static u_int64_t state_to_hex(State state) {
 
 // The next two functions calculate the linear conflicts of a given 15-puzzle
 // source code from @asarandi | link: https://github.com/asarandi/n-puzzle
-static uint count_conflicts(int candidate, int solved, int result) {
+static u_int8_t count_conflicts(int candidate, int solved, int result) {
     int i, j, ti, tj, f, k, counts[4];
 
     for (i = 0; i < 4; i++)
@@ -81,8 +81,8 @@ static uint count_conflicts(int candidate, int solved, int result) {
     return count_conflicts(candidate, solved, ++result);
 }
 
-uint linear_conflict(State current_state) {
-    uint lc = 0;
+u_int8_t linear_conflicts(State current_state) {
+    u_int8_t lc = 0;
     int candidate, solved;
 
     u_int64_t state = state_to_hex(current_state);

@@ -1,6 +1,5 @@
-#include <assert.h>
-#include <limits.h>
 #include "Stack.h"
+#include <assert.h>
 
 typedef struct stack_node {
     void* data;
@@ -9,7 +8,7 @@ typedef struct stack_node {
 
 struct stack_struct {
     StackNode top;
-    u_int64_t size;
+    size_t size;
     DestroyFunc destroy;
 };
 
@@ -55,7 +54,7 @@ void* stack_pop(Stack stack) {
 // destroys the given stack
 void stack_destroy(Stack stack) {
     if (stack_is_empty(stack)) {
-        // free(stack);
+        free(stack);
         return;
     }
      
@@ -71,12 +70,11 @@ void stack_destroy(Stack stack) {
 
         stack->size--;
     }
-    stack->top = NULL;
     // free(stack);
 }
 
 // returns the number of elements in the stack
-u_int64_t stack_size(Stack stack) {
+size_t stack_size(Stack stack) {
     assert(stack != NULL);
     return stack->size;
 }

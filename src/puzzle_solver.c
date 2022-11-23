@@ -1,21 +1,8 @@
 #include <assert.h>
 #include <time.h>
-#include <limits.h>
 #include "io.h"
 #include "heuristic.h"
 #include "Stack.h"
-
-// move applicability
-static bool ap_ops[4][16] = {
-    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
-    {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0},
-    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}
-};
-
-// blank's offsets in each new move
-static int8_t row_offset[] = {0, 0, -1, 1};
-static int8_t col_offset[] = {-1, 1, 0, 0};
 
 // initializes a new state
 State init_state(void) {
@@ -24,10 +11,18 @@ State init_state(void) {
     return new;
 }
 
+// blank's offsets in each new move
+static int8_t row_offset[] = {0, 0, -1, 1};
+static int8_t col_offset[] = {-1, 1, 0, 0};
+
+// returns heuristic of given state
+static inline u_int8_t heuristic(State state) {
+    return manhattan_distance(state) + linear_conflicts(state);
+}
+
 // generates a new state, from parent based on new move
 static State new_move(State parent, Move new_move) {
     State new = init_state();
-
     // copy current state in new state
     for (u_int8_t i = 0; i < N; i++)
         for (u_int8_t j = 0; j < N; j++)
@@ -44,14 +39,9 @@ static State new_move(State parent, Move new_move) {
     // assign values
     new->parent = parent;
     new->g = parent->g + 1;
+    new->h = heuristic(new);
     new->move = new_move;
-
     return new;
-}
-
-// returns heuristic of given state
-static inline uint heuristic(State state) {
-    return manhattan_distance(state) + linear_conflict(state);
 }
 
 // opposite of given move
@@ -59,26 +49,32 @@ static inline Move opposite_move(Move move) {
     return move & 1 ? move - 1 : move + 1;
 }
 
-// recursive IDA*
-static uint ida(State state, uint treshold, Stack visited) {
-    if (state->parent != NULL) {
-        stack_push(visited, state);
-        state->h = heuristic(state);
-    }
+// move applicability
+static bool ap_ops[4][16] = {
+    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+    {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0},
+    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}
+};
 
+// recursive IDA*
+static u_int8_t ida(State state, u_int8_t treshold, Stack visited) {
+    // add to frontier only if the state isn't the initial
+    if (state->parent != NULL)
+        stack_push(visited, state);
+
+    // solved
     if (!state->h) {
         print_solution(state);
         return 0;
     }
 
-    uint f = state->g + state->h;
-    if (f > treshold)
-        return f;
+    u_int8_t fscore = state->g + state->h;
+    if (fscore > treshold)
+        return fscore;
 
-    uint min = UINT_MAX;
-
+    u_int8_t min = 0xFF; // largest 1-byte number
     u_int8_t val = state->blank_row * N + state->blank_col;
-
     for (Move move = 0; move < 4; move++) {
         // out of bounds
         if (!ap_ops[move][val])
@@ -88,10 +84,10 @@ static uint ida(State state, uint treshold, Stack visited) {
         if (state->move == opposite_move(move))
             continue;
 
-        uint temp = ida(new_move(state, move), treshold, visited);
+        u_int8_t temp = ida(new_move(state, move), treshold, visited);
         if (!temp)
             return 0;
-        if (temp < min)
+        else if (temp < min)
             min = temp;
     }
     return min;
@@ -99,14 +95,14 @@ static uint ida(State state, uint treshold, Stack visited) {
 
 // IDA* control loop
 void puzzle_solve(State initial) {
+    /* frontier is a Stack (similarly to IDS), which is destroyed after each
+       IDA* iteration, thus keeping only the visited states of current iteration*/
     Stack visited;
     stack_init(&visited, free);
 
-    initial->g = 0;
-    uint treshold = initial->h = heuristic(initial);
-
+    u_int8_t treshold = initial->h = heuristic(initial);
     while ((treshold = ida(initial, treshold, visited)))
-        stack_destroy(visited); // always avoid overflow scenario
+        stack_destroy(visited);
 
     stack_destroy(visited);
     free(visited);
@@ -121,7 +117,7 @@ bool is_puzzle_solvable(State state) {
         for (u_int8_t j = 0; j < N; j++)
             temp[i*N+j] = state->puzzle[i][j];
     
-    uint inv_count = 0;
+    u_int8_t inv_count = 0;
     for (u_int8_t i = 0; i < N * N - 1; i++)
         for (u_int8_t j = i + 1; j < N * N; j++)
             if (temp[j] && temp[i] > temp[j]) 

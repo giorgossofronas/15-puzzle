@@ -12,8 +12,9 @@ int main(void) {
             break;
 
     State initial = init_state();
+    initial->g = 0;
     initial->parent = NULL;
-    initial->move = NON_APPLICABLE;
+    initial->move = NONE;
 
     if (input == '1') // random initial puzzle
         random_puzzle(initial);

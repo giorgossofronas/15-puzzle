@@ -1,5 +1,4 @@
 #include <assert.h>
-#include "common.h"
 #include "io.h"
 
 // scans puzzle
