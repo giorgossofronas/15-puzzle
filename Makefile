@@ -4,7 +4,10 @@ SRC = ./src
 
 MAKE += --silent
 
+# compiler options
 CC = gcc
+CFLAGS = -Wall -Werror -Wextra -O3 -I$(INCLUDE)
+
 EXEC = 15PuzzleSolver
 
 # if on Windows
@@ -13,9 +16,12 @@ ifeq ($(OS), win)
 	EXEC = 15PuzzleSolver.exe
 endif
 
-CFLAGS = -Wall -Werror -Wextra -O3 -I$(INCLUDE)
+# source and object files
+SRCS = $(wildcard $(SRC)/*.c)
+OBJS = $(patsubst %.c,%.o,$(SRCS))
 
-OBJS = $(SRC)/Stack.o $(SRC)/heuristic.o $(SRC)/puzzle_solver.o $(SRC)/io.o $(SRC)/main.o
+%.o: %.c
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 all:
 	@$(MAKE) clean
@@ -23,7 +29,7 @@ all:
 
 # compile executable
 $(EXEC): $(OBJS)
-	$(CC) $(OBJS) -o $(EXEC) $(CFLAGS)
+	@$(CC) $(CFLAGS) $(OBJS) -o $(EXEC)
 
 # cleaning
 clean:
@@ -31,7 +37,7 @@ clean:
 
 # compile and run
 run: $(EXEC)
-	./$(EXEC)
-	$(RM) $(SRC)/*.o
+	@./$(EXEC)
+	@$(RM) $(SRC)/*.o
 
 .PHONY: all clean run
