@@ -1,8 +1,8 @@
+#include <stdio.h>
 #include "io.h"
 
 int main(void) {
-    printf("\nThe 15-puzzle Solver!!!\n");
-
+    printf("\nThe 15-puzzle solver!!!\n");
     printf("\n- Type 0 to give your own initial puzzle.\n");
     printf("- Type 1 to generate random initial puzzle.\n");
 
@@ -30,9 +30,9 @@ int main(void) {
         return 1;
 
     // find blank tile's coordinates in initial puzzle
-    initial->blank_row = 0xF;
-    for (u_int8_t i = 0; i < N && initial->blank_row == 0xF; i++) {
-        for (u_int8_t j = 0; j < N; j++) {
+    initial->blank_row = N + 1;
+    for (int i = 0; i < N && initial->blank_row == N + 1; i++) {
+        for (int j = 0; j < N; j++) {
             if (!initial->puzzle[i][j]) {
                 initial->blank_row = i;
                 initial->blank_col = j;
@@ -44,6 +44,7 @@ int main(void) {
     printf("\nSolution:\n");
     print_puzzle(initial);
 
+    // solve puzzle
     puzzle_solve(initial);
 
     return 0;

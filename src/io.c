@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "io.h"
 
 // scans puzzle
@@ -6,25 +8,23 @@ void scan_puzzle(State state) {
     printf("Please enter numbers 1-%u for number tiles and 0 for the blank one.\n", N * N - 1);
 
     // flags for input validation
-    u_int8_t* isNumUsed = calloc(N * N, 1);
-    assert(isNumUsed != NULL);
+    bool* is_num_used = calloc(N * N, sizeof(bool));
+    assert(is_num_used != NULL);
 
-    for (u_int8_t i = 0; i < N; i++) {
-        for (u_int8_t j = 0; j < N; j++) {
-            printf("  puzzle[%hhu][%hhu]: ", i, j);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("  puzzle[%d][%d]: ", i, j);
 
-            u_int8_t symbol;
-            if (!scanf("%hhu", &symbol))
-                exit(EXIT_FAILURE);
-
-            if (symbol < N * N) {
+            Tile num;
+            scanf("%hhu", &num);
+            if (num < N * N) {
                 // check if input is repeated
-                if(!isNumUsed[symbol]) {
-                    state->puzzle[i][j] = symbol;
-                    isNumUsed[symbol] = 1;
+                if(!is_num_used[num]) {
+                    state->puzzle[i][j] = num;
+                    is_num_used[num] = true;
                 }
                 else {
-                    printf("  Number %hhu is already used. Try again with different one.\n", symbol);
+                    printf("  Number %hhu is already used. Try again with different one.\n", num);
                     j--;
                 }
             }
@@ -35,18 +35,18 @@ void scan_puzzle(State state) {
         }
     }
     printf("\n");
-    free(isNumUsed);
+    free(is_num_used);
 }
 
 // prints given puzzle
 void print_puzzle(State state) {
     printf("\n");
-    for(u_int8_t i = 0; i < N; i++) {
+    for(int i = 0; i < N; i++) {
         printf("+");
-        for (u_int8_t n = N; n > 0; n--)
+        for (int n = N; n > 0; n--)
             printf("----+");
         printf("\n");
-        for(u_int8_t j = 0; j < N; j++) {
+        for(int j = 0; j < N; j++) {
             if (!state->puzzle[i][j])
                 printf("|    ");
             else
@@ -55,7 +55,7 @@ void print_puzzle(State state) {
         printf("|\n");
     }
     printf("+");
-    for (u_int8_t n = N; n > 0; n--)
+    for (int n = N; n > 0; n--)
         printf("----+");
     printf("\n          ▼");
 }

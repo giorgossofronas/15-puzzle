@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdio.h>
-#include "puzzle_solver.h"
+#include "solver.h"
 
 // scans puzzle board
 void scan_puzzle(State);

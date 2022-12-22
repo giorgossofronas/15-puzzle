@@ -1,6 +1,12 @@
 #pragma once
 
-#include "common.h"
+#include <stdbool.h>
+
+// simple typedef for unsigned integers
+typedef unsigned int uint;
+
+// puzzle's tile
+typedef unsigned char Tile;
 
 // puzzle size is NxN
 #define N 4
@@ -10,12 +16,12 @@ typedef enum {
     LEFT, RIGHT, UP, DOWN, NONE
 } Move;
 
-typedef struct state_node {
-    u_int8_t puzzle[N][N];
-    u_int8_t g, h;
-    u_int8_t blank_row, blank_col;
+typedef struct _state {
+    Tile** puzzle; // puzzle-board
+    uint g, h;
+    uint blank_row, blank_col;
     Move move; // move that resulted in this state
-    struct state_node* parent;
+    struct _state* parent;
 }* State;
 
 // allocates memory for a state

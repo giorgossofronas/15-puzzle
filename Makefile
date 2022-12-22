@@ -6,7 +6,7 @@ MAKE += --silent
 
 # compiler options
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -O3 -I$(INCLUDE)
+CFLAGS = -Wall -Werror -Wextra -g3 -O0 -I$(INCLUDE)
 
 EXEC = 15PuzzleSolver
 

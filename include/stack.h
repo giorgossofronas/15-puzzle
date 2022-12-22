@@ -1,6 +1,10 @@
 #pragma once
 
-#include "common.h"
+#include <stdbool.h>
+#include <stdlib.h>
+
+// pointer to function that destroys given element
+typedef void (*DestroyFunc)(void*);
 
 typedef struct stack_struct* Stack;
 

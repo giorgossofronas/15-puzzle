@@ -1,13 +1,17 @@
 #include "heuristic.h"
 
-// sum of the manhanttan distances of each tile from its goal position 
-u_int8_t manhattan_distance(State state) {
-    u_int8_t sum_manh = 0; 
+// returns the absolute value of given int
+static inline uint abs_int(int x) {
+    return x >= 0 ? x : -1 * x;
+}
 
-    for (u_int8_t i = 0; i < N; i++)
-        for (u_int8_t j = 0; j < N; j++)
+// sum of the manhanttan distances of each tile from its goal position 
+uint manhattan_distance(State state) {
+    uint sum_manh = 0; 
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
             if (state->puzzle[i][j])
-               sum_manh += abs((state->puzzle[i][j] - 1) / N - i) + abs((state->puzzle[i][j] - 1) % N - j);
+               sum_manh += abs_int((state->puzzle[i][j] - 1) / N - i) + abs_int((state->puzzle[i][j] - 1) % N - j);
 
     return sum_manh;
 }
@@ -20,9 +24,9 @@ u_int8_t manhattan_distance(State state) {
                8 7 15 13
    would be converted into this hex number:
        0xC590E234BA6187FD                    */
-static u_int64_t state_to_hex(State state) {
-    u_int64_t result = 0;
-    u_int64_t power16 = 1; // power of 16 from 0-15
+static unsigned long state_to_hex(State state) {
+    unsigned long result = 0;
+    unsigned long power16 = 1; // power of 16 from 0-15
 
     for (int i = 15, pow = 0; i >= 0; i--, pow++, power16 <<= 4)
         result += state->puzzle[i/4][i%4] * power16;
@@ -35,7 +39,7 @@ static u_int64_t state_to_hex(State state) {
 
 // The next two functions calculate the linear conflicts of a given 15-puzzle
 // source code from @asarandi | link: https://github.com/asarandi/n-puzzle
-static u_int8_t count_conflicts(int candidate, int solved, int result) {
+static uint count_conflicts(int candidate, int solved, int result) {
     int i, j, ti, tj, f, k, counts[4];
 
     for (i = 0; i < 4; i++)
@@ -81,11 +85,11 @@ static u_int8_t count_conflicts(int candidate, int solved, int result) {
     return count_conflicts(candidate, solved, ++result);
 }
 
-u_int8_t linear_conflicts(State current_state) {
-    u_int8_t lc = 0;
+uint linear_conflicts(State current_state) {
+    uint lc = 0;
     int candidate, solved;
 
-    u_int64_t state = state_to_hex(current_state);
+    unsigned long state = state_to_hex(current_state);
 
     for (int i = 0; i < 4; i++) {
         candidate = (int)((state >> ((3 - i) << 4)) & 0xFFFF);

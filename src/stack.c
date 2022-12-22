@@ -1,4 +1,4 @@
-#include "Stack.h"
+#include "stack.h"
 #include <assert.h>
 
 typedef struct stack_node {

@@ -11,7 +11,7 @@ Given an initial puzzle configuration, the goal is to reach a specific final puz
 Then press `ENTER` and the optimal solution will be displayed step-by-step.
 
 ## Compilation & Use
-**You can compile and run the solver online at [onlinegdb.com](https://www.onlinegdb.com/) by clicking [here](https://onlinegdb.com/nT_VghxBa).**<br>
+**You can compile and run the solver online at [onlinegdb.com](https://www.onlinegdb.com/) by clicking [here](https://onlinegdb.com/ySc8Y49iD).**<br>
 Note that the program may run slower online than it does on a local terminal.<br><br>
 Alternatively a `Makefile` is provided for Windows and Linux users. To compile and run the program, navigate to the project's directory and run the following command:<br>
 ```bash 
